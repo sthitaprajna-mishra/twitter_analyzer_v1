@@ -10,4 +10,3 @@ re==2.2.1
 textblob==0.15.3
 vaderSentiment==3.3.2
 PIL==8.0.1
-boto==2.48.0
