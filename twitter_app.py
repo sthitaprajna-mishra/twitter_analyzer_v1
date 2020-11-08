@@ -19,7 +19,8 @@ from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
 # NLP libraries
-from nltk import word_tokenize
+import nltk
+nltk.download("punkt")
 from textblob import TextBlob
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
@@ -454,7 +455,7 @@ def remove_stopwords(text):
 data['Clean_TweetText'] = data['Clean_TweetText'].apply(lambda text : remove_stopwords(text.lower()))
 
 # Text Tokenization and Normalization
-data['Clean_TweetText'] = data['Clean_TweetText'].apply(lambda x: word_tokenize(x))
+data['Clean_TweetText'] = data['Clean_TweetText'].apply(lambda x: nltk.word_tokenize(x))
 
 # Now let’s stitch these tokens back together
 data['Clean_TweetText'] = data['Clean_TweetText'].apply(lambda x: ' '.join([w for w in x]))
