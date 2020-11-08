@@ -24,7 +24,9 @@ from nltk.corpus import stopwords
 from textblob import TextBlob
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
+# Additional libraries
 from PIL import Image
+import os
 
 # # # TWITTER CLIENT # # #
 
