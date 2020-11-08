@@ -8,4 +8,4 @@ plotly==4.7.0
 nltk==3.3
 textblob==0.15.3
 vaderSentiment==3.3.2
-PIL==8.0.1
+Pillow==8.0.1
