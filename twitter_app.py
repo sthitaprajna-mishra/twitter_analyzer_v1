@@ -3,10 +3,7 @@ import streamlit as st
 
 # Stream live tweets
 from tweepy.streaming import StreamListener
-from tweepy import OAuthHandler, Stream, API, Cursor
-
-# Tweepy credentials
-import twitter_credentials
+from tweepy import OAuthHandler, Stream, API, Cursor, TweepError
 
 # Data cleaning and preprocessing
 import re
@@ -87,8 +84,8 @@ class TwitterClient():
 class TwitterAuthenticator():
     
     def authenticate_twitter_app(self):
-            auth = OAuthHandler(twitter_credentials.API_KEY, twitter_credentials.API_SECRET)
-            auth.set_access_token(twitter_credentials.ACCESS_TOKEN, twitter_credentials.ACCESS_SECRET)
+            auth = OAuthHandler(os.environ['API_KEY'], os.environ['API_SECRET'])
+            auth.set_access_token(os.environ['ACCESS_TOKEN'], os.environ['ACCESS_SECRET'])
             return auth
 
 # # # TWITTER STREAM LISTENER # # # 
@@ -220,8 +217,26 @@ user_width = st.sidebar.slider("Choose width of wordclouds: ", 300, 800, 700)
 user_height = st.sidebar.slider("Choose height of wordclouds: ", 200, 500, 400)
 user_font = st.sidebar.slider("Choose max fontsize of wordclouds: ", 50, 150, 80)
 
+# Extract message from Tweepy errors
+def getExceptionMessage(msg):
+    words = msg.split(' ')
+
+    errorMsg = ""
+    for index, word in enumerate(words):
+        if index not in [0,1,2]:
+            errorMsg = errorMsg + ' ' + word
+    errorMsg = errorMsg.rstrip("\'}]")
+    errorMsg = errorMsg.lstrip(" \'")
+
+    return errorMsg
+
 # Convert tweets into dataframe
-tweets = api.user_timeline(screen_name = user_id, count = tweet_count)
+try:
+	tweets = api.user_timeline(screen_name = user_id, count = tweet_count)
+except TweepError as e:
+    st.write(getExceptionMessage(e.reason))
+    raise Exception('API code: ', e.api_code)
+    
 df = tweet_analyzer.tweets_to_data_frame(tweets)
 df['sentiment'] = np.array([tweet_analyzer.analyze_sentiment(tweet) for tweet in df['tweets']])
 
@@ -450,46 +465,44 @@ data['Clean_TweetText'] = data['Clean_TweetText'].apply(lambda x: ' '.join([w fo
 data["Clean_TweetText"].replace("", np.nan, inplace = True)
 data.dropna(inplace=True)
 
+# WordCloud Function
+def create_wordcloud(df_name, u_width, u_height, u_font):
+	all_words = ' '.join([text for text in df_name['Clean_TweetText']])
+	wordcloud = WordCloud(width=u_width,height=u_height,random_state=21,max_font_size=u_font).generate(all_words)
+	return st.image(wordcloud.to_array())
 
 # TOTAL WORLD CLOUD #
 
-all_words = ' '.join([text for text in data['Clean_TweetText']])
-wordcloud = WordCloud(width=user_width,height=user_height,random_state=21,max_font_size=user_font).generate(all_words)
-st.subheader("Word Cloud (All Tweets)")
 st.write("""
 
     ## Word Cloud (All Tweets)
 
     """)
-st.image(wordcloud.to_array())
+create_wordcloud(data, user_width, user_height, user_font)
 
 # POSITIVE WORLD CLOUD #
 
 # Create dataframe containing positive tweets only
 pos_df = data[data["sentiment"] == 1]
 
-pos_words = ' '.join([text for text in pos_df['Clean_TweetText']])
-pos_cloud = WordCloud(width=user_width,height=user_height,random_state=21,max_font_size=user_font).generate(pos_words)
 st.write("""
 
     ## Word Cloud (Positive Tweets)
 
     """)
-st.image(pos_cloud.to_array())
+create_wordcloud(pos_df, user_width, user_height, user_font)
 
 # NEGATIVE WORLD CLOUD #
 
 # Create dataframe containing negative tweets only
 neg_df = data[data["sentiment"] == -1]
 
-neg_words = ' '.join([text for text in neg_df['Clean_TweetText']])
-neg_cloud = WordCloud(width=user_width,height=user_height,random_state=21,max_font_size=user_font).generate(neg_words)
 st.write("""
 
     ## Word Cloud (Negative Tweets)
 
     """)
-st.image(neg_cloud.to_array())
+create_wordcloud(neg_df, user_width, user_height, user_font)
 
 
 # VaderSentiment Analysis
@@ -536,11 +549,6 @@ x = ["A bit positive", "Positive", "Meh", "A bit negative", "Negative"]
 
 # Create a List of Values (Same Length as Names List)
 y = [bit_pos, pos, meh, bit_neg, neg]
-
-# sentiment_df = pd.DataFrame(list(zip(x, y)), columns = ["Labels", "Sentiment"])
-
-# # Show the Chart
-# st.bar_chart(sentiment_df["Sentiment"])   
 
 st.write("""
 
