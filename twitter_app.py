@@ -189,7 +189,7 @@ This app will give you a complete analysis of any Twitter profile.
 st.sidebar.header("User Input")
 
 # Accepts user data
-user_id = st.sidebar.text_input("Enter Twitter username: ", "iAnkurSingh")
+user_id = st.sidebar.text_input("Enter Twitter username: ", "realDonaldTrump")
 tweet_count = st.sidebar.slider("Enter number of tweets to analyze: ", 10, 3200, 100)
 
 st.sidebar.write("""
