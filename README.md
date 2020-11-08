@@ -1,6 +1,6 @@
 # Twitter Profile Analyzer 
 
-The deployed web app is live at 
+The deployed web app is live at https://twitterprofileanalysis.herokuapp.com/
 
 This web app gives a complete analysis of the Twitter profile - basic profile information, tweet statistics, and sentiment breakdown of the tweets of the Twitter account through efficient data visulization techniques.
 
