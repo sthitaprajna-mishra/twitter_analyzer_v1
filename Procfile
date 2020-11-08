@@ -1,1 +1,1 @@
-web: sh setup.sh && streamlit run twitter_app.py
+web: streamlit run twitter_app.py --server.port=$PORT
