@@ -446,6 +446,7 @@ data['Clean_TweetText'] = data['Clean_TweetText'].str.replace(r"http\S+", "")
 data['Clean_TweetText'] = data['Clean_TweetText'].str.replace("[^a-zA-Z]", " ")
 
 # Remove stop words
+nltk.download("stopwords")
 stopwords = set(stopwords.words("english"))
 
 def remove_stopwords(text):
