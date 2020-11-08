@@ -20,7 +20,7 @@ import plotly.graph_objects as go
 
 # NLP libraries
 import nltk
-nltk.download("stopwords")
+nltk.download()
 from textblob import TextBlob
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
